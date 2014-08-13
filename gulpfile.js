@@ -14,11 +14,11 @@ Cordova project is created under ./build/ and treated as a build artifact.
 
 // Plugins can't be stores in package.josn right now.
 //  - They are published to plugin registry rather than npm.
-//  - They don't list their dependency plugins in their package json.
-//    This might even be impossible because dependency can be platform specific.
+//  - They don't list their dependency plugins in their package.json.
+//    This might even be impossible because dependencies can be platform specific.
 var plugins = ['org.apache.cordova.file'];
 
-// Platform to use for run/emulate. Alternatively create tasks like runios, runandroid.
+// Platform to use for run/emulate. Alternatively, create tasks like runios, runandroid.
 var testPlatform = 'android';
 
 
@@ -31,19 +31,19 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var cordova_lib = require('cordova-lib');
 var cdv = cordova_lib.cordova.raw;
-
-// Useful globals
 var buildDir = path.join(__dirname, 'build');
 
-// List of platforms determined form pkd.dependencies
-// This way platform file downloading is entirely handled by npm install.
-var platforms = [];
-var platform_dirs = [];
+
+// List of platforms determined form pkd.dependencies. This way platform file
+// downloading and version preferences are entirely handled by npm install.
+var platforms = [];  // List like ['cordova-ios', 'cordova-android']
+var platform_dirs = [];  // List of subdirs with platform files under node_moduels
 for (p in cordova_lib.cordova_platforms) {
     var pname = 'cordova-' + p;
     if (pkg.dependencies[pname]) {
         platforms.push(pname);
         platform_dirs.push(path.join(__dirname, 'node_modules', pname));
+        // TODO: Check if those dirs exist and if not ask the user to run "npm install"
     }
 
 }
@@ -51,9 +51,9 @@ for (p in cordova_lib.cordova_platforms) {
 
 //////////////////////// TASKS /////////////////////////////
 
-// All cordova-lib calls (except "cordova create") must be done from withing
+// All cordova-lib calls (except "cordova create") must be done from within
 // the cordova project dir because cordova-lib determines projectRoot from
-// process.cwd() in cordova-lib/src/cordova/util.js: isCordova()
+// process.cwd() in cordova-lib/src/cordova/util.js:isCordova()
 
 gulp.task('jshint', function() {
     gulp.src('./src/www/js/*.js')
@@ -90,7 +90,7 @@ gulp.task('emulate', function(cb) {
 gulp.task('release', function(cb) {
     process.chdir(buildDir);
     cdv.build({options: ['--release']}).done(cb);
-    // TODO: copy the apk file(s) out of build/ to a release dir.
+    // TODO: copy the apk file(s) out of ./build/.
 });
 
 
@@ -105,10 +105,12 @@ gulp.task('recreate', ['clean'], function(cb) {
 
     fs.symlinkSync(path.join('..', 'src', 'config.xml'), 'config.xml');
     fs.symlinkSync(path.join('..', 'src', 'www'), 'www');
+    // We could alternatively copy www and then watch it to copy changes.
+    // Useful if using SASS CoffeeScrite etc.
 
-    // Must first add plugins then platforms. If adding platforms first it
-    // fails expecting to find the build/plugins directory.
-    // TODO: try 3rd param, cli_variables etc.
+    // Must first add plugins then platforms. If adding platforms first,
+    // cordova fails expecting to find the ./build/plugins directory.
+    // TODO: try 3rd param {cli_variables: {...}}.
     cdv.plugins('add', plugins)
     .then(function() {
         return cdv.platform('add', platform_dirs)
@@ -117,8 +119,8 @@ gulp.task('recreate', ['clean'], function(cb) {
 });
 
 
-
-// Alternative version of recreate that uses "cordova create" rather than creating the links manually.
+// Alternative version of recreate that uses "cordova create" rather than
+// creating the links manually.
 gulp.task('cdvcreate', ['clean'], function(cb) {
     // TODO: remove "uri" when cordova-lib 0.21.7 is released.
     var srcDir = path.join(__dirname, 'src');
@@ -140,4 +142,3 @@ gulp.task('cdvcreate', ['clean'], function(cb) {
     })
     .done(cb);
 });
-
