@@ -1,0 +1,29 @@
+{
+  "name": "HelloGulpApp",
+  "version": "0.0.1",
+  "description": "A Hello World app built using Cordova with Gulp workflow.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kamrik/CordovaGulpTemplate.git"
+  },
+  "keywords": [
+    "Cordova",
+    "Gulp"
+  ],
+  "author": "Mark Koudritsky <kamrik@gmail.com>",
+  "license": "Apache version 2.0",
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "gulp-jshint": "^1.8.4",
+    "cordova-lib": "^0.21.6",
+    "del": "^0.1.1"
+  },
+  "dependencies": {
+    "cordova-android": "^3.5.1",
+    "cordova-ios": "^3.5.0"
+  }
+}
