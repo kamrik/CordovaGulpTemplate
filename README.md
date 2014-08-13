@@ -1,7 +1,7 @@
 ## CordovaGulpTemplate ##
 
 
-HelloWorld app built using cordova with [gulp](https://github.com/gulpjs/gulp) workflow.
+HelloWorld app built using [cordova](http://cordova.apache.org/) with [gulp](https://github.com/gulpjs/gulp) workflow.
 
 ## Usage ##
 
