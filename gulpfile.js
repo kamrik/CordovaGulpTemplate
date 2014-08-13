@@ -3,6 +3,10 @@
 An experimental gulpfile that manages a simple cordova based app using
 cordova-lib directly without cordova-cli.
 
+Cordova project is created under ./build/ and treated as a build artifact.
+`gulp clean` removes the build directory.
+`gulp recreate` creates it afresh.
+
 */
 
 
@@ -75,12 +79,12 @@ gulp.task('build', function(cb) {
 
 gulp.task('run', function(cb) {
     process.chdir(buildDir);
-    cdv.run({platforms:['android'], options:['--device']}).done(cb);
+    cdv.run({platforms:[testPlatform], options:['--device']}).done(cb);
 });
 
 gulp.task('emulate', function(cb) {
     process.chdir(buildDir);
-    cdv.emulate({platforms:['android']}).done(cb);
+    cdv.emulate({platforms:[testPlatform]}).done(cb);
 });
 
 gulp.task('release', function(cb) {
