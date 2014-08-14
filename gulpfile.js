@@ -67,36 +67,36 @@ gulp.task('clean', function(cb) {
 });
 
 // Prepare is not really needed
-gulp.task('prepare', function(cb) {
+gulp.task('prepare', function() {
     process.chdir(buildDir);
-    cdv.prepare().done(cb);
+    return cdv.prepare();
 });
 
-gulp.task('build', function(cb) {
+gulp.task('build', function() {
     process.chdir(buildDir);
-    cdv.build().done(cb);
+    return cdv.build();
 });
 
 gulp.task('run', function(cb) {
     process.chdir(buildDir);
-    cdv.run({platforms:[testPlatform], options:['--device']}).done(cb);
+    return cdv.run({platforms:[testPlatform], options:['--device']});
 });
 
-gulp.task('emulate', function(cb) {
+gulp.task('emulate', function() {
     process.chdir(buildDir);
-    cdv.emulate({platforms:[testPlatform]}).done(cb);
+    return cdv.emulate({platforms:[testPlatform]});
 });
 
-gulp.task('release', function(cb) {
+gulp.task('release', function() {
     process.chdir(buildDir);
-    cdv.build({options: ['--release']}).done(cb);
+    return cdv.build({options: ['--release']});
     // TODO: copy the apk file(s) out of ./build/.
 });
 
 
 // Create the cordova project under ./build/. This version doesn't use cordova
 // create, instead just links config.xml and www/
-gulp.task('recreate', ['clean'], function(cb) {
+gulp.task('recreate', ['clean'], function() {
     // TODO: remove "uri" when cordova-lib 0.21.7 is released.
     var srcDir = path.join(__dirname, 'src');
 
@@ -111,24 +111,23 @@ gulp.task('recreate', ['clean'], function(cb) {
     // Must first add plugins then platforms. If adding platforms first,
     // cordova fails expecting to find the ./build/plugins directory.
     // TODO: try 3rd param {cli_variables: {...}}.
-    cdv.plugins('add', plugins)
+    return cdv.plugins('add', plugins)
     .then(function() {
-        return cdv.platform('add', platform_dirs)
-    })
-    .done(cb);
+        return cdv.platform('add', platform_dirs);
+    });
 });
 
 
 // Alternative version of recreate that uses "cordova create" rather than
 // creating the links manually.
-gulp.task('cdvcreate', ['clean'], function(cb) {
+gulp.task('cdvcreate', ['clean'], function() {
     // TODO: remove "uri" when cordova-lib 0.21.7 is released.
     var srcDir = path.join(__dirname, 'src');
     cfg = {lib: {www: {uri: srcDir, url: srcDir, link: true}}};
 
     // TODO: Can app id be saved in package.json
     var appId = 'org.apache.cordova.example.HelloGulp';
-    cdv.create(buildDir, appId, pkg.name, cfg)
+    return cdv.create(buildDir, appId, pkg.name, cfg)
     .then(function() {
         // Further Cordova commands must be run inside the cordova project dir.
         process.chdir(buildDir);
@@ -138,7 +137,6 @@ gulp.task('cdvcreate', ['clean'], function(cb) {
     })
     .then(function() {
         // TODO: try 3rd param, cli_variables etc.
-        return cdv.plugins('add', plugins)
-    })
-    .done(cb);
+        return cdv.plugins('add', plugins);
+    });
 });
