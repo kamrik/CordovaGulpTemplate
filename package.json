@@ -1,7 +1,7 @@
 {
-  "name": "HelloGulpApp",
+  "name": "BTstApp",
   "version": "0.0.1",
-  "description": "A Hello World app built using Cordova with Gulp workflow.",
+  "description": "An app I use to test cordova plugins on browser platform.",
   "main": "index.js",
   "scripts": {
     "test": "gulp test"
@@ -19,11 +19,14 @@
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-jshint": "^1.8.4",
+    "express": "latest",
+    "tiny-lr": "latest",
+    "connect-livereload": "latest",
     "cordova-lib": "^0.21.6",
     "del": "^0.1.1"
   },
   "dependencies": {
-    "cordova-android": "^3.5.1",
-    "cordova-ios": "^3.5.0"
+    "cordova-android": "latest",
+    "cordova-browser": "latest"
   }
 }

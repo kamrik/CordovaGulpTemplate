@@ -16,7 +16,7 @@ Cordova project is created under ./build/ and treated as a build artifact.
 //  - They are published to plugin registry rather than npm.
 //  - They don't list their dependency plugins in their package.json.
 //    This might even be impossible because dependencies can be platform specific.
-var plugins = ['org.apache.cordova.file'];
+var plugins = ['org.apache.cordova.device'];
 
 // Platform to use for run/emulate. Alternatively, create tasks like runios, runandroid.
 var testPlatform = 'android';
@@ -38,7 +38,7 @@ var buildDir = path.join(__dirname, 'build');
 // downloading and version preferences are entirely handled by npm install.
 var platforms = [];  // List like ['cordova-ios', 'cordova-android']
 var platform_dirs = [];  // List of subdirs with platform files under node_moduels
-for (p in cordova_lib.cordova_platforms) {
+for (var p in cordova_lib.cordova_platforms) {
     var pname = 'cordova-' + p;
     if (pkg.dependencies[pname]) {
         platforms.push(pname);
@@ -47,6 +47,53 @@ for (p in cordova_lib.cordova_platforms) {
     }
 
 }
+//// Serving and live-reload
+var EXPRESS_PORT = 4000;
+var EXPRESS_ROOT = 'build/platforms/browser/www/';
+var LIVERELOAD_PORT = 35729;
+
+// For serving and live-reload
+// taken from http://rhumaric.com/2014/01/livereload-magic-gulp-style/
+function startExpress() {
+
+    var express = require('express');
+    var app = express();
+    app.use(require('connect-livereload')({port: LIVERELOAD_PORT}));
+    app.use(express.static(EXPRESS_ROOT));
+    app.listen(EXPRESS_PORT);
+}
+
+// We'll need a reference to the tinylr
+// object to send notifications of file changes
+// further down
+var lr;
+function startLivereload() {
+    lr = require('tiny-lr')();
+    lr.listen(LIVERELOAD_PORT);
+}
+
+// Notifies livereload of changes detected
+// by `gulp.watch()`
+function notifyLivereload(event) {
+    console.error('### gulpfile.js:78\nEvent:' + event.path);
+
+    // `gulp.watch()` events provide an absolute path
+    // so we need to make it relative to the server root
+    var fileName = path.relative(EXPRESS_ROOT, event.path);
+
+    lr.changed({
+        body: {
+            files: [fileName]
+        }
+    });
+}
+
+gulp.task('server', function () {
+    startExpress();
+    startLivereload();
+    gulp.watch('src/**/*', ['prepare'])
+    gulp.watch(EXPRESS_ROOT + '**/*', notifyLivereload);
+});
 
 
 //////////////////////// TASKS /////////////////////////////
@@ -62,14 +109,14 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('clean', function(cb) {
-  // Alternative package for cleaning is gulp-rimraf
-  del(['build'], cb);
+    // Alternative package for cleaning is gulp-rimraf
+    del(['build'], cb);
 });
 
 // Prepare is not really needed
 gulp.task('prepare', function() {
     process.chdir(buildDir);
-    return cdv.prepare();
+    return cdv.prepare('browser');
 });
 
 gulp.task('build', function() {
