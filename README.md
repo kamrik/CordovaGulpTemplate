@@ -3,7 +3,7 @@
 
 HelloWorld app built using [cordova](http://cordova.apache.org/) with [gulp](https://github.com/gulpjs/gulp) workflow.
 
-[My slides about this template](http://kamrik.org/GulpCordova/) from a meetup in Berlin.
+[Slides about this template](http://kamrik.org/GulpCordova/) from a meetup in Berlin.
 
 ## Usage ##
 
